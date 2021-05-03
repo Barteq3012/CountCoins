@@ -60,14 +60,8 @@ public class DetectText extends AppCompatActivity {
         setContentView(R.layout.detect_text);
         ButterKnife.bind(this);
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
-        //ViewPager viewPager = findViewById(R.id.view_pager);
-        //viewPager.setAdapter(sectionsPagerAdapter);
-       // TabLayout tabs = findViewById(R.id.tabs);
-        //tabs.setupWithViewPager(viewPager);
         detectTextButton = findViewById(R.id.detectTextButtonId);
         textView = findViewById(R.id.text_display);
-
-
 
         detectTextButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -182,6 +176,10 @@ public class DetectText extends AppCompatActivity {
     }
 
     private void detectTextFromImage() {
+        if(imageBitmap == null){
+            Toast.makeText(getApplicationContext(), "Select a picture first!", Toast.LENGTH_SHORT).show();
+            return;
+        }
         FirebaseVisionImage firebaseVisionImage = FirebaseVisionImage.fromBitmap(imageBitmap);
         FirebaseVisionTextDetector firebaseVisionTextDetector = FirebaseVision.getInstance().getVisionTextDetector();
         firebaseVisionTextDetector.detectInImage(firebaseVisionImage).addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {

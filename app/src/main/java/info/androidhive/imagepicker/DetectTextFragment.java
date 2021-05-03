@@ -203,6 +203,10 @@ public class DetectTextFragment extends Fragment {
     }
 
     private void detectTextFromImage() {
+        if(imageBitmap == null){
+            Toast.makeText(getActivity(), "Select a picture first!", Toast.LENGTH_SHORT).show();
+            return;
+        }
         FirebaseVisionImage firebaseVisionImage = FirebaseVisionImage.fromBitmap(imageBitmap);
         FirebaseVisionTextDetector firebaseVisionTextDetector = FirebaseVision.getInstance().getVisionTextDetector();
         firebaseVisionTextDetector.detectInImage(firebaseVisionImage).addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {

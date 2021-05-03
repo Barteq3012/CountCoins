@@ -38,6 +38,9 @@ import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+
+import org.opencv.android.OpenCVLoader;
+
 import java.io.IOException;
 import java.util.List;
 import butterknife.BindView;
@@ -64,6 +67,14 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setAdapter(sectionsPagerAdapter);
         TabLayout tabs = findViewById(R.id.tabs);
         tabs.setupWithViewPager(viewPager);
+
+        /*
+        if(OpenCVLoader.initDebug()){
+            Toast.makeText(getApplicationContext(), "working", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getApplicationContext(), "not working :((((", Toast.LENGTH_SHORT).show();
+        }
+*/
 
         ImagePickerActivity.clearCache(this);
 

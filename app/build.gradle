@@ -17,11 +17,28 @@ android {
         }
     }
 
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    sourceSets {
+        main {
+            jni {
+                srcDirs 'src\\main\\jni', 'src\\main\\jniLibs'
+            }
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            version "3.12.0"
+        }
+        ndkBuild {
+            path 'build/intermediates/ndk/debug/Android.mk'
+        }
+    }
 }
+
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -31,6 +48,7 @@ dependencies {
     implementation 'android.arch.lifecycle:livedata:1.1.1'
     implementation 'android.arch.lifecycle:viewmodel:1.1.1'
     implementation 'com.greysonparrelli.permiso:permiso:0.3.0'
+    implementation project(path: ':openCVLibrary3414')
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
@@ -56,5 +74,7 @@ dependencies {
 
     implementation 'com.github.yalantis:ucrop:2.2.2'
 }
+
+
 
 apply plugin: 'com.google.gms.google-services'
