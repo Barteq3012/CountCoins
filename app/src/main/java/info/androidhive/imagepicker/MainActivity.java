@@ -38,6 +38,9 @@ import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+
+import org.opencv.android.OpenCVLoader;
+
 import java.io.IOException;
 import java.util.List;
 import butterknife.BindView;
@@ -52,6 +55,15 @@ public class MainActivity extends AppCompatActivity {
     Button detectTextButton;
     Bitmap imageBitmap;
     TextView textView;
+
+    static{
+        if (OpenCVLoader.initDebug()){
+            Log.d(TAG, "dziala ddddddddddddddddddddd");
+
+        } else {
+            Log.d(TAG, "nie dziala aaaaaaaaaaaa");
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/CountCoins.iml" filepath="$PROJECT_DIR$/.idea/modules/CountCoins.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/CountCoins.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/CountCoins.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/openCVLibrary3414/CountCoins.openCVLibrary3414.iml" filepath="$PROJECT_DIR$/.idea/modules/openCVLibrary3414/CountCoins.openCVLibrary3414.iml" />
     </modules>
   </component>
 </project>
