@@ -1,97 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/text_display"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_below="@id/rect_layout"
-        android:layout_above="@id/buttons_layout"
-        android:scrollbars="vertical"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
-        android:text=""
-        android:textSize="20sp" />
-
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/tool_bar_dimen"
+        android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabs"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/profile_default_tint"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
-
-        <!-- here is possible to include bar layout -->
+            android:layout_height="30dp"
+            android:background="?attr/colorPrimary" />
 
     </android.support.design.widget.AppBarLayout>
 
-    <LinearLayout
-        android:id="@+id/buttons_layout"
+    <android.support.v4.view.ViewPager
+        android:id="@+id/view_pager"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:orientation="horizontal"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="10dp"
-        android:layout_gravity="bottom"
-        >
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-
-        <Button
-            android:id="@+id/detectTextButtonId"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:background="@color/design_default_color_primary_dark"
-            android:text="@string/detect_text"
-            android:layout_weight="1"
-            android:textAllCaps="false"
-            android:textColor="@android:color/white"
-            android:textSize="12sp" />
-
-        <Button
-            android:id="@+id/captureImageButtonId"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_weight="1"
-            android:text="@string/capture_image"
-            android:textAllCaps="false"
-            android:background="@color/design_default_color_primary_dark"
-            android:textColor="@android:color/white"
-            android:textSize="12sp" />
-    </LinearLayout>
-
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/rect_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/tool_bar_dimen"
-
-        >
-
-        <ImageView
-            android:id="@+id/img_view"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintDimensionRatio="1:1"
-            android:src="@drawable/outline_image_black_48"
-            tools:ignore="MissingConstraints"
-
-            />
-
-    </android.support.constraint.ConstraintLayout>
-
-
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>
