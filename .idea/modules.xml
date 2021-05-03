@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CountCoins.iml" filepath="$PROJECT_DIR$/.idea/modules/CountCoins.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/CountCoins.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/CountCoins.app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/openCVLibrary3414/CountCoins.openCVLibrary3414.iml" filepath="$PROJECT_DIR$/.idea/modules/openCVLibrary3414/CountCoins.openCVLibrary3414.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/CountCoins.iml" filepath="$PROJECT_DIR$/.idea/CountCoins.iml" />
     </modules>
   </component>
 </project>
