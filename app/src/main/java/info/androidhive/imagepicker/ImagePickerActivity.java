@@ -84,7 +84,7 @@ public class ImagePickerActivity extends AppCompatActivity {
     public static void showImagePickerOptions(Context context, PickerOptionListener listener) {
         // setup the alert builder
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle(context.getString(R.string.lbl_set_profile_photo));
+        builder.setTitle(context.getString(R.string.lbl_choose_method));
 
         // add a list
         String[] animals = {context.getString(R.string.lbl_take_camera_picture), context.getString(R.string.lbl_choose_from_gallery)};
