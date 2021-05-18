@@ -16,14 +16,107 @@ tools:context=".CountCoinsFragment">
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_below="@id/rect_layout"
-        android:layout_above="@id/buttons_layout"
+        android:layout_above="@id/sliders_layout"
         android:scrollbars="vertical"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
-        android:text=""
+        android:text="@string/n_coins"
         android:textSize="20sp" />
+
+
+    <GridLayout
+        android:id="@+id/sliders_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/buttons_layout"
+        android:columnCount="2"
+        android:rowCount="4"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="20dp"
+
+        >
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_row="0"
+            android:layout_column="0"
+            android:text="Gradient: 50" />
+
+        <SeekBar
+            android:id="@+id/seekBar1"
+            android:layout_width="175dp"
+            android:layout_height="wrap_content"
+            android:layout_row="1"
+            android:layout_column="0"
+            android:max="100"
+            android:progress="50"
+            android:layout_marginBottom="30dp"/>
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_row="0"
+            android:layout_column="1"
+            android:text="Max size: 50" />
+
+        <SeekBar
+            android:id="@+id/seekBar2"
+            android:layout_width="175dp"
+            android:layout_height="wrap_content"
+            android:layout_row="1"
+            android:layout_column="1"
+            android:max="100"
+            android:progress="50"
+            android:layout_marginBottom="30dp"/>
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_row="2"
+            android:layout_column="0"
+            android:text="Threshold: 50" />
+
+        <SeekBar
+            android:id="@+id/seekBar3"
+            android:layout_width="175dp"
+            android:layout_height="wrap_content"
+            android:layout_row="3"
+            android:max="100"
+            android:progress="50"
+            android:layout_column="0"/>
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_row="2"
+            android:layout_column="1"
+            android:text="Min size: 0" />
+
+        <SeekBar
+            android:id="@+id/seekBar4"
+            android:layout_width="175dp"
+            android:layout_height="wrap_content"
+            android:layout_row="3"
+            android:max="100"
+            android:progress="0"
+            android:layout_column="1" />
+
+
+
+
+
+    </GridLayout>
+
+
 
 
 
@@ -46,7 +139,7 @@ tools:context=".CountCoinsFragment">
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@color/profile_default_tint"
-            android:text="@string/detect_text"
+            android:text="@string/count_coins"
             android:textAllCaps="false"
             android:textColor="@android:color/white"
             android:textSize="12sp" />

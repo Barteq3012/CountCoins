@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         if(OpenCVLoader.initDebug()){
             Toast.makeText(getApplicationContext(), "working", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(getApplicationContext(), "not working :((((", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "not working :(", Toast.LENGTH_SHORT).show();
         }
 */
 

@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.firebase.ml.vision.text.FirebaseVisionText;
@@ -45,10 +46,19 @@ public class CountCoinsFragment extends Fragment {
     Button countCoinsButton;
     Button captureImageButton;
     Bitmap imageBitmap;
+    Bitmap imageBitmap2;
     TextView textView;
     ImageView selected_image;
     Mat mat;
     Mat grayMat;
+    //all items connected with sliders
+    TextView label1, label2, label3, label4;
+    SeekBar seekbar1, seekbar2, seekbar3, seekbar4;
+    int minRadius = 0;
+    int maxRadius = 200;
+    double param1 = 70; //gradient
+    double param2 = 100; //threshold
+
 
     @Override
     public View onCreateView(
@@ -59,6 +69,16 @@ public class CountCoinsFragment extends Fragment {
         captureImageButton = root.findViewById(R.id.captureImageButtonId);
         textView = root.findViewById(R.id.text_display);
         selected_image = root.findViewById(R.id.img_view);
+
+        //sliders initialization
+        label1 = root.findViewById(R.id.textView1);
+        label2 = root.findViewById(R.id.textView2);
+        label3 = root.findViewById(R.id.textView3);
+        label4 = root.findViewById(R.id.textView4);
+        seekbar1 = root.findViewById(R.id.seekBar1);
+        seekbar2 = root.findViewById(R.id.seekBar2);
+        seekbar3 = root.findViewById(R.id.seekBar3);
+        seekbar4 = root.findViewById(R.id.seekBar4);
 
         return root;
     }
@@ -79,13 +99,94 @@ public class CountCoinsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 onCaptureImageButtonClick();
+                textView.setText("Number of coins: ");
             }
+        });
+
+        seekbar1.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                label1.setText("Gradient: " + i);
+                param1 = 20.0 + (double) i;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+
+
+        });
+
+        seekbar2.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                label2.setText("Max size: " + i);
+                maxRadius = 150 + i;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+
+
+        });
+
+        seekbar3.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                label3.setText("Threshold: " + i);
+                param2 = 50.0 + (double) i;
+                Log.d("myTag", "value of threshold is set: " + param2 );
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+
+
+        });
+
+        seekbar4.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                label4.setText("Min size: " + i);
+                minRadius = i;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+
+
         });
 
         textView.setMovementMethod(new ScrollingMovementMethod());
 
         loadDefaultImage();
-
 
         // Clearing older images from cache directory
         // don't call this line if you want to choose multiple images in the same activity
@@ -199,7 +300,10 @@ public class CountCoinsFragment extends Fragment {
             try {
                 // can update this bitmap to server
                 imageBitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
-                // loading profile image from local cache
+
+                imageBitmap2 = imageBitmap.copy(imageBitmap.getConfig(), true);
+
+                // loading image from local cache
 
                 loadImage(uri.toString());
             } catch (IOException e) {
@@ -214,7 +318,9 @@ public class CountCoinsFragment extends Fragment {
             return;
         }
 
-        /* convert bitmap to mat */
+        imageBitmap = imageBitmap2.copy(imageBitmap2.getConfig(), true);
+
+        // convert bitmap to mat
         mat = new Mat(imageBitmap.getWidth(), imageBitmap.getHeight(),
                 CvType.CV_8UC1);
         grayMat = new Mat(imageBitmap.getWidth(), imageBitmap.getHeight(),
@@ -222,85 +328,80 @@ public class CountCoinsFragment extends Fragment {
 
         Utils.bitmapToMat(imageBitmap, mat);
 
-        /* convert to grayscale */
+        // convert to grayscale
         int colorChannels = (mat.channels() == 3) ? Imgproc.COLOR_BGR2GRAY
                 : ((mat.channels() == 4) ? Imgproc.COLOR_BGRA2GRAY : 1);
 
         Imgproc.cvtColor(mat, grayMat, colorChannels);
 
-        /* reduce the noise so we avoid false circle detection */
+        // reduce the noise
         Imgproc.GaussianBlur(grayMat, grayMat, new Size(9, 9), 2, 2);
 
-// accumulator value
+        // accumulator value
         double dp = 1.2d;
-// minimum distance between the center coordinates of detected circles in pixels
+        // minimum distance between the center coordinates of detected circles in pixels
         double minDist = 100;
 
-// min and max radii (set these values as you desire)
-        int minRadius = 0, maxRadius = 0;
+        // min and max radius
+        //minRadius = 0;
+        //maxRadius = 200;
 
-// param1 = gradient value used to handle edge detection
-// param2 = Accumulator threshold value for the
-// cv2.CV_HOUGH_GRADIENT method.
-// The smaller the threshold is, the more circles will be
-// detected (including false circles).
-// The larger the threshold is, the more circles will
-// potentially be returned.
-        double param1 = 70, param2 = 72;
+        // param1 = gradient value used to handle edge detection
+        // param2 = Accumulator threshold value for the
+        // cv2.CV_HOUGH_GRADIENT method.
 
-        /* create a Mat object to store the circles detected */
+       // param1 = 70;
+       // param2 = 100;
+
+        // create a Mat object to store the circles detected
         Mat circles = new Mat(imageBitmap.getWidth(),
                 imageBitmap.getHeight(), CvType.CV_8UC1);
 
-        /* find the circle in the image */
+        // find the circle in the image
         Imgproc.HoughCircles(grayMat, circles,
                 Imgproc.CV_HOUGH_GRADIENT, dp, minDist, param1,
                 param2, minRadius, maxRadius);
 
-        /* get the number of circles detected */
+        // get the number of circles detected
         int numberOfCircles = (circles.rows() == 0) ? 0 : circles.cols();
 
-        /* draw the circles found on the image */
-        for (int i=0; i<numberOfCircles; i++) {
+        textView.setText("Number of coins: " + Integer.toString(numberOfCircles));
+
+        if( numberOfCircles != 0 && numberOfCircles < 100){
+            // draw the circles found on the image
+            for (int i=0; i<numberOfCircles; i++) {
+
+                /* get the circle details, circleCoordinates[0, 1, 2] = (x,y,r)
+                 * (x,y) are the coordinates of the circle's center
+                 */
+                double[] circleCoordinates = circles.get(0, i);
 
 
-            /* get the circle details, circleCoordinates[0, 1, 2] = (x,y,r)
-             * (x,y) are the coordinates of the circle's center
-             */
-            double[] circleCoordinates = circles.get(0, i);
+                if( circleCoordinates.length > 1 ){
+                    int x = (int) circleCoordinates[0], y = (int) circleCoordinates[1];
 
+                    Point center = new Point(x, y);
 
-            int x = (int) circleCoordinates[0], y = (int) circleCoordinates[1];
+                    int radius = (int) circleCoordinates[2];
 
-            Point center = new Point(x, y);
+                    /* circle's outline */
+                    Imgproc.circle(mat, center, radius, new Scalar(0,
+                            255, 0), 4);
 
-            int radius = (int) circleCoordinates[2];
-
-            /* circle's outline */
-            Imgproc.circle(mat, center, radius, new Scalar(0,
-                    255, 0), 4);
-
-            /* circle's center outline */
-            Imgproc.rectangle(mat, new Point(x - 5, y - 5),
-                    new Point(x + 5, y + 5),
-                    new Scalar(0, 128, 255), -1);
-        }
-
-        /* convert back to bitmap */
-        Utils.matToBitmap(mat, imageBitmap);
-        selected_image.setImageBitmap(imageBitmap);
-    }
-
-    private void displayTextFromImage(FirebaseVisionText firebaseVisionText) {
-        List<FirebaseVisionText.Block> blockList = firebaseVisionText.getBlocks();
-        if (blockList.size() == 0){
-            Toast.makeText(getActivity(), "No Text Found in image", Toast.LENGTH_SHORT).show();
-        } else {
-            for (FirebaseVisionText.Block block : firebaseVisionText.getBlocks()){
-                String text = block.getText();
-                textView.setText(text);
+                    /* circle's center outline */
+                    Imgproc.rectangle(mat, new Point(x - 5, y - 5),
+                            new Point(x + 5, y + 5),
+                            new Scalar(0, 128, 255), -1);
+                } else {
+                    Log.d("myTag", "for some reason vector does not contain 2 or 3 elements, here length  " + circleCoordinates.length );
+                }
             }
+
+            /* convert back to bitmap */
+            Utils.matToBitmap(mat, imageBitmap);
+            selected_image.setImageBitmap(imageBitmap);
         }
+
     }
 
     // permissions

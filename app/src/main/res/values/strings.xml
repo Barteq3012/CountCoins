@@ -8,8 +8,9 @@
     <string name="toast_image_intent_null">Image picker option is missing!</string>
     <string name="detect_text">Detect text</string>
     <string name="capture_image">Capture Image</string>
+    <string name="count_coins">Count Coins</string>
 
-    <!-- font families -->
+    <!-- fonts -->
     <string name="font_family_light">sans-serif-light</string>
     <string name="font_family_medium">sans-serif-medium</string>
     <string name="font_family_regular">sans-serif</string>
@@ -22,4 +23,5 @@
     <string name="title_activity_main2">MainActivity2</string>
     <string name="tab_text_1">Detect text</string>
     <string name="tab_text_2">Count coins</string>
+    <string name="n_coins">Number of coins: </string>
 </resources>
