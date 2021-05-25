@@ -235,8 +235,9 @@ public class DetectTextFragment extends Fragment {
         }
     }
 
+/*
     private void showSettingsDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(DetectText.this);
         builder.setTitle(getString(R.string.dialog_permission_title));
         builder.setMessage(getString(R.string.dialog_permission_message));
         builder.setPositiveButton(getString(R.string.go_to_settings), (dialog, which) -> {
@@ -251,9 +252,10 @@ public class DetectTextFragment extends Fragment {
     // navigating user to app settings
     private void openSettings() {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        Uri uri = Uri.fromParts("package", getActivity().getPackageName(), null);
+        Uri uri = Uri.fromParts("package", getPackageName(), null);
         intent.setData(uri);
         startActivityForResult(intent, 101);
     }
 
+ */
 }

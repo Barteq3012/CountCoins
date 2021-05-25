@@ -18,13 +18,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
+import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -45,6 +48,7 @@ public class CountCoinsFragment extends Fragment {
     static final int REQUEST_IMAGE_CAPTURE = 1;
     Button countCoinsButton;
     Button captureImageButton;
+    Switch gamma_switch;
     Bitmap imageBitmap;
     Bitmap imageBitmap2;
     TextView textView;
@@ -58,7 +62,7 @@ public class CountCoinsFragment extends Fragment {
     int maxRadius = 200;
     double param1 = 70; //gradient
     double param2 = 100; //threshold
-
+    int gamma_flag;
 
     @Override
     public View onCreateView(
@@ -69,7 +73,7 @@ public class CountCoinsFragment extends Fragment {
         captureImageButton = root.findViewById(R.id.captureImageButtonId);
         textView = root.findViewById(R.id.text_display);
         selected_image = root.findViewById(R.id.img_view);
-
+        gamma_switch = root.findViewById(R.id.gamma_switch);
         //sliders initialization
         label1 = root.findViewById(R.id.textView1);
         label2 = root.findViewById(R.id.textView2);
@@ -79,6 +83,8 @@ public class CountCoinsFragment extends Fragment {
         seekbar2 = root.findViewById(R.id.seekBar2);
         seekbar3 = root.findViewById(R.id.seekBar3);
         seekbar4 = root.findViewById(R.id.seekBar4);
+
+
 
         return root;
     }
@@ -328,13 +334,22 @@ public class CountCoinsFragment extends Fragment {
 
         Utils.bitmapToMat(imageBitmap, mat);
 
-        // convert to grayscale
+        // convert to grayscale RGB or ARGB
         int colorChannels = (mat.channels() == 3) ? Imgproc.COLOR_BGR2GRAY
                 : ((mat.channels() == 4) ? Imgproc.COLOR_BGRA2GRAY : 1);
 
         Imgproc.cvtColor(mat, grayMat, colorChannels);
 
-        // reduce the noise
+        if(gamma_switch.isChecked()){
+            Mat dst = new Mat(grayMat.size(),grayMat.type());
+            Mat dst_1 = new Mat(grayMat.size(),grayMat.type());
+            grayMat.convertTo(dst, CvType.CV_64F, 1.0 / 255, 0);
+            Core.pow(dst, 0.7, dst_1);
+            dst_1.convertTo(dst_1, CvType.CV_8U,255,0);
+            grayMat = dst_1;
+        }
+
+        // reduce the noise by GaussianBlur
         Imgproc.GaussianBlur(grayMat, grayMat, new Size(9, 9), 2, 2);
 
         // accumulator value
@@ -342,7 +357,7 @@ public class CountCoinsFragment extends Fragment {
         // minimum distance between the center coordinates of detected circles in pixels
         double minDist = 100;
 
-        // min and max radius
+
         //minRadius = 0;
         //maxRadius = 200;
 
@@ -368,6 +383,16 @@ public class CountCoinsFragment extends Fragment {
         textView.setText("Number of coins: " + Integer.toString(numberOfCircles));
 
         if( numberOfCircles != 0 && numberOfCircles < 100){
+            int r;
+            int lowest_r = Integer.MAX_VALUE;
+            for (int i=0; i<numberOfCircles; i++) {
+                double[] circleCoordinates = circles.get(0, i);
+                r = (int) circleCoordinates[2];
+                if(r < lowest_r){
+                    lowest_r = r;
+                }
+            }
+
             // draw the circles found on the image
             for (int i=0; i<numberOfCircles; i++) {
 
@@ -388,25 +413,39 @@ public class CountCoinsFragment extends Fragment {
                     Imgproc.circle(mat, center, radius, new Scalar(0,
                             255, 0), 4);
 
+                    Scalar color = new Scalar(0, 0, 0);
+                    int font = Core.FONT_HERSHEY_SIMPLEX;
                     /* circle's center outline */
+                    /*
                     Imgproc.rectangle(mat, new Point(x - 5, y - 5),
                             new Point(x + 5, y + 5),
-                            new Scalar(0, 128, 255), -1);
+                            new Scalar(0, 128, 255), -1);*/
+                    if( radius < 1.1*lowest_r){
+                        Imgproc.putText(mat, "1", new Point(x - 10, y - 10), font, 3, color , 3);
+                    }
+                    else if (radius >= 1.1*lowest_r && radius < 1.16*lowest_r) {
+                        Imgproc.putText(mat, "2", new Point(x - 10, y - 10), font, 3, color , 3);
+                    } else {
+                        Imgproc.putText(mat, "5", new Point(x - 10, y - 10), font, 3, color , 3);
+                    }
+
+
+
                 } else {
                     Log.d("myTag", "for some reason vector does not contain 2 or 3 elements, here length  " + circleCoordinates.length );
                 }
             }
 
-            /* convert back to bitmap */
+            // convert back to bitmap
             Utils.matToBitmap(mat, imageBitmap);
             selected_image.setImageBitmap(imageBitmap);
         }
 
     }
 
-    // permissions
+    /*
     private void showSettingsDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(DetectText.this);
         builder.setTitle(getString(R.string.dialog_permission_title));
         builder.setMessage(getString(R.string.dialog_permission_message));
         builder.setPositiveButton(getString(R.string.go_to_settings), (dialog, which) -> {
@@ -421,9 +460,11 @@ public class CountCoinsFragment extends Fragment {
     // navigating user to app settings
     private void openSettings() {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        Uri uri = Uri.fromParts("package", getActivity().getPackageName(), null);
+        Uri uri = Uri.fromParts("package", getPackageName(), null);
         intent.setData(uri);
         startActivityForResult(intent, 101);
     }
+
+    */
 
 }
