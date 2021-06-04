@@ -1,6 +1,9 @@
 package info.androidhive.imagepicker;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -9,6 +12,7 @@ import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -44,6 +48,8 @@ public class DetectTextFragment extends Fragment {
     Bitmap imageBitmap;
     TextView textView;
     ImageView selected_image;
+    FloatingActionButton copyButton;
+
 
     @Override
     public View onCreateView(
@@ -54,7 +60,7 @@ public class DetectTextFragment extends Fragment {
         captureImageButton = root.findViewById(R.id.captureImageButtonId);
         textView = root.findViewById(R.id.text_display);
         selected_image = root.findViewById(R.id.img_view);
-
+        copyButton = root.findViewById(R.id.copyTextButton);
         return root;
     }
 
@@ -76,13 +82,21 @@ public class DetectTextFragment extends Fragment {
             }
         });
 
+        copyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("whatever", textView.getText().toString());
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(getActivity(), "Text has been copied", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         textView.setMovementMethod(new ScrollingMovementMethod());
 
         loadDefaultImage();
 
-
         // Clearing older images from cache directory
-        // don't call this line if you want to choose multiple images in the same activity
         ImagePickerActivity.clearCache(getActivity());
     }
 
@@ -225,13 +239,20 @@ public class DetectTextFragment extends Fragment {
 
     private void displayTextFromImage(FirebaseVisionText firebaseVisionText) {
         List<FirebaseVisionText.Block> blockList = firebaseVisionText.getBlocks();
+        copyButton.hide();
         if (blockList.size() == 0){
             Toast.makeText(getActivity(), "No Text Found in image", Toast.LENGTH_SHORT).show();
         } else {
+            copyButton.show();
+            String text = "";
+            StringBuilder s = new StringBuilder(text);
             for (FirebaseVisionText.Block block : firebaseVisionText.getBlocks()){
-                String text = block.getText();
-                textView.setText(text);
+                text = block.getText();
+                s.append(text);
+                s.append("\n");
             }
+            text = s.toString();
+            textView.setText(text);
         }
     }
 

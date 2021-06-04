@@ -3,6 +3,7 @@ package info.androidhive.imagepicker;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -59,10 +60,9 @@ public class CountCoinsFragment extends Fragment {
     TextView label1, label2, label3, label4;
     SeekBar seekbar1, seekbar2, seekbar3, seekbar4;
     int minRadius = 0;
-    int maxRadius = 200;
-    double param1 = 70; //gradient
-    double param2 = 100; //threshold
-    int gamma_flag;
+    int maxRadius = 250;
+    double param1 = 100; //gradient
+    double param2 = 80; //threshold
 
     @Override
     public View onCreateView(
@@ -83,8 +83,6 @@ public class CountCoinsFragment extends Fragment {
         seekbar2 = root.findViewById(R.id.seekBar2);
         seekbar3 = root.findViewById(R.id.seekBar3);
         seekbar4 = root.findViewById(R.id.seekBar4);
-
-
 
         return root;
     }
@@ -112,82 +110,61 @@ public class CountCoinsFragment extends Fragment {
         seekbar1.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                i = i/5;i=i*5;
                 label1.setText("Gradient: " + i);
                 param1 = 20.0 + (double) i;
             }
-
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
             }
-
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
             }
-
-
         });
 
         seekbar2.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                i = i/5;i=i*5;
                 label2.setText("Max size: " + i);
                 maxRadius = 150 + i;
             }
-
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
             }
-
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
             }
-
-
         });
 
         seekbar3.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                i = i/5;i=i*5;
                 label3.setText("Threshold: " + i);
                 param2 = 50.0 + (double) i;
-                Log.d("myTag", "value of threshold is set: " + param2 );
             }
-
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
             }
-
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
             }
-
-
         });
 
         seekbar4.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                i = i/5;i=i*5;
                 label4.setText("Min size: " + i);
                 minRadius = i;
             }
-
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
             }
-
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
             }
-
-
         });
 
         textView.setMovementMethod(new ScrollingMovementMethod());
@@ -195,7 +172,6 @@ public class CountCoinsFragment extends Fragment {
         loadDefaultImage();
 
         // Clearing older images from cache directory
-        // don't call this line if you want to choose multiple images in the same activity
         ImagePickerActivity.clearCache(getActivity());
     }
 
@@ -277,7 +253,7 @@ public class CountCoinsFragment extends Fragment {
 
         // setting aspect ratio
         intent.putExtra(ImagePickerActivity.INTENT_LOCK_ASPECT_RATIO, true);
-        intent.putExtra(ImagePickerActivity.INTENT_ASPECT_RATIO_X, 1); // 16x9, 1x1, 3:4, 3:2
+        intent.putExtra(ImagePickerActivity.INTENT_ASPECT_RATIO_X, 1);
         intent.putExtra(ImagePickerActivity.INTENT_ASPECT_RATIO_Y, 1);
 
         // setting maximum bitmap width and height
@@ -294,7 +270,7 @@ public class CountCoinsFragment extends Fragment {
 
         // setting aspect ratio
         intent.putExtra(ImagePickerActivity.INTENT_LOCK_ASPECT_RATIO, true);
-        intent.putExtra(ImagePickerActivity.INTENT_ASPECT_RATIO_X, 1); // 16x9, 1x1, 3:4, 3:2
+        intent.putExtra(ImagePickerActivity.INTENT_ASPECT_RATIO_X, 1);
         intent.putExtra(ImagePickerActivity.INTENT_ASPECT_RATIO_Y, 1);
         startActivityForResult(intent, REQUEST_IMAGE);
     }
@@ -310,7 +286,6 @@ public class CountCoinsFragment extends Fragment {
                 imageBitmap2 = imageBitmap.copy(imageBitmap.getConfig(), true);
 
                 // loading image from local cache
-
                 loadImage(uri.toString());
             } catch (IOException e) {
                 e.printStackTrace();
@@ -319,6 +294,9 @@ public class CountCoinsFragment extends Fragment {
     }
 
     private void countCoinsFromImage() {
+        double sum = 0.0;
+        double s = 15.5;
+        double[] dim_ratio = {1.0,1.0,16.5/s,17.5/s,18.5/s,19.5/s,20.5/s,21.5/s,24.0/s,24.0/s};
         if(imageBitmap == null){
             Toast.makeText(getActivity(), "Select a picture first!", Toast.LENGTH_SHORT).show();
             return;
@@ -341,16 +319,15 @@ public class CountCoinsFragment extends Fragment {
         Imgproc.cvtColor(mat, grayMat, colorChannels);
 
         if(gamma_switch.isChecked()){
-            Mat dst = new Mat(grayMat.size(),grayMat.type());
             Mat dst_1 = new Mat(grayMat.size(),grayMat.type());
-            grayMat.convertTo(dst, CvType.CV_64F, 1.0 / 255, 0);
-            Core.pow(dst, 0.7, dst_1);
-            dst_1.convertTo(dst_1, CvType.CV_8U,255,0);
+            Core.MinMaxLocResult minmaxV = Core.minMaxLoc(grayMat);
+            Core.subtract(grayMat, new Scalar(minmaxV.minVal), grayMat);
+            grayMat.convertTo(dst_1, CvType.CV_8U,(255.0/(minmaxV.maxVal - minmaxV.minVal)),0);
             grayMat = dst_1;
         }
 
         // reduce the noise by GaussianBlur
-        Imgproc.GaussianBlur(grayMat, grayMat, new Size(9, 9), 2, 2);
+        Imgproc.GaussianBlur(grayMat, grayMat, new Size(13, 13), 5, 5);
 
         // accumulator value
         double dp = 1.2d;
@@ -393,7 +370,8 @@ public class CountCoinsFragment extends Fragment {
                 }
             }
 
-            // draw the circles found on the image
+
+            // draw the circles
             for (int i=0; i<numberOfCircles; i++) {
 
                 /* get the circle details, circleCoordinates[0, 1, 2] = (x,y,r)
@@ -403,33 +381,52 @@ public class CountCoinsFragment extends Fragment {
 
 
                 if( circleCoordinates.length > 1 ){
-                    int x = (int) circleCoordinates[0], y = (int) circleCoordinates[1];
-
+                    int x = (int) circleCoordinates[0];
+                    int y = (int) circleCoordinates[1];
                     Point center = new Point(x, y);
-
                     int radius = (int) circleCoordinates[2];
 
-                    /* circle's outline */
+                    int colour = 0;
+                    int red = 0;
+                    int green = 0;
+                    int blue = 0;
+                    int alpha = 0;
+                    int counter = 1;
+                    for(int a = y - radius; a < y + radius; a++) {
+                        for(int b = x - radius; b < x + radius; b++){
+                            if(Math.sqrt(Math.pow((y-a),2) + Math.pow((x-b),2)) < radius){
+                                colour = imageBitmap.getPixel(b, a);
+                                red += Color.red(colour);
+                                green += Color.green(colour);
+                                blue += Color.blue(colour);
+                                alpha += Color.alpha(colour);
+                                counter++;
+                            }
+                        }
+                    }
+
+                    Log.d("myTag", "Srednie RGBA to:  " + red/counter + " " + green/counter + " " + blue/counter + " " + alpha/counter + " i licznik " + counter );
+                    Log.d("myTag", "Radius = " + radius);
+                    int c = imageBitmap.getPixel(x,y);
+
                     Imgproc.circle(mat, center, radius, new Scalar(0,
                             255, 0), 4);
 
                     Scalar color = new Scalar(0, 0, 0);
                     int font = Core.FONT_HERSHEY_SIMPLEX;
-                    /* circle's center outline */
-                    /*
-                    Imgproc.rectangle(mat, new Point(x - 5, y - 5),
-                            new Point(x + 5, y + 5),
-                            new Scalar(0, 128, 255), -1);*/
-                    if( radius < 1.1*lowest_r){
-                        Imgproc.putText(mat, "1", new Point(x - 10, y - 10), font, 3, color , 3);
-                    }
-                    else if (radius >= 1.1*lowest_r && radius < 1.16*lowest_r) {
-                        Imgproc.putText(mat, "2", new Point(x - 10, y - 10), font, 3, color , 3);
-                    } else {
-                        Imgproc.putText(mat, "5", new Point(x - 10, y - 10), font, 3, color , 3);
-                    }
 
-
+                    String[] coins = new String[]{"1", "10", "2", "20", "5", "50", "2", "1", "5"};
+                    for(int j = 1; j < 9; j++){
+                        double l = (dim_ratio[j-1] +  dim_ratio[j])/2.0;
+                        double h = (dim_ratio[j] +  dim_ratio[j+1])/2.0;
+                        if( radius < lowest_r * h && radius >= lowest_r * l){
+                            Imgproc.putText(mat, coins[j-1], new Point(x - 10, y - 10), font, 3, color , 3);
+                            Log.d("myTag", "Policzona moneta to:  " + coins[j-1] );
+                        } else if( j == 8 && radius >= lowest_r * h) {
+                            Imgproc.putText(mat, coins[j], new Point(x - 10, y - 10), font, 3, color, 3);
+                            Log.d("myTag", "Policzona moneta to:  " + coins[j] );
+                        }
+                    }
 
                 } else {
                     Log.d("myTag", "for some reason vector does not contain 2 or 3 elements, here length  " + circleCoordinates.length );

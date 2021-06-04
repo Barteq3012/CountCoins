@@ -7,6 +7,7 @@
     tools:context=".DetectTextFragment">
 
     <RelativeLayout
+        android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".DetectTextFragment">
@@ -15,38 +16,36 @@
             android:id="@+id/text_display"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_below="@id/rect_layout"
             android:layout_above="@id/buttons_layout"
-            android:scrollbars="vertical"
+            android:layout_below="@id/rect_layout"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="10dp"
+            android:scrollbars="vertical"
             android:text=""
             android:textSize="20sp" />
-
 
 
         <LinearLayout
             android:id="@+id/buttons_layout"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:orientation="horizontal"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_marginBottom="10dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true"
             android:layout_gravity="bottom"
-            >
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
 
 
             <Button
                 android:id="@+id/detectTextButtonId"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:background="@color/design_default_color_primary_dark"
                 android:text="@string/detect_text"
-                android:layout_weight="1"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
                 android:textSize="12sp" />
@@ -57,9 +56,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_weight="1"
+                android:background="@color/design_default_color_primary_dark"
                 android:text="@string/capture_image"
                 android:textAllCaps="false"
-                android:background="@color/design_default_color_primary_dark"
                 android:textColor="@android:color/white"
                 android:textSize="12sp" />
         </LinearLayout>
@@ -76,11 +75,26 @@
                 android:id="@+id/img_view"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                app:layout_constraintDimensionRatio="1:1"
                 android:src="@drawable/outline_image_black_48"
+                app:layout_constraintDimensionRatio="1:1"
                 tools:ignore="MissingConstraints"
 
                 />
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/copyTextButton"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:clickable="true"
+                android:src="?attr/actionModeCopyDrawable"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.955"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.955"
+                android:focusable="true" />
 
         </android.support.constraint.ConstraintLayout>
 
