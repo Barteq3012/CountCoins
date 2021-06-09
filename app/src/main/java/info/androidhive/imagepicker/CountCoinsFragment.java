@@ -1,31 +1,27 @@
 package info.androidhive.imagepicker;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
@@ -35,21 +31,16 @@ import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
+
 import java.io.IOException;
-import java.util.List;
-import info.androidhive.imagepicker.ui.main.PageViewModel;
 
 
 public class CountCoinsFragment extends Fragment {
-    private static final String ARG_SECTION_NUMBER = "section_number";
-    private PageViewModel pageViewModel;
-
-    private static final String TAG = DetectText.class.getSimpleName();
     public static final int REQUEST_IMAGE = 100;
-    static final int REQUEST_IMAGE_CAPTURE = 1;
     Button countCoinsButton;
     Button captureImageButton;
     Switch gamma_switch;
+    Switch contrast_switch;
     Bitmap imageBitmap;
     Bitmap imageBitmap2;
     TextView textView;
@@ -61,7 +52,7 @@ public class CountCoinsFragment extends Fragment {
     SeekBar seekbar1, seekbar2, seekbar3, seekbar4;
     int minRadius = 0;
     int maxRadius = 250;
-    double param1 = 100; //gradient
+    double param1 = 80; //gradient
     double param2 = 80; //threshold
 
     @Override
@@ -74,6 +65,7 @@ public class CountCoinsFragment extends Fragment {
         textView = root.findViewById(R.id.text_display);
         selected_image = root.findViewById(R.id.img_view);
         gamma_switch = root.findViewById(R.id.gamma_switch);
+        contrast_switch = root.findViewById(R.id.contrast_switch);
         //sliders initialization
         label1 = root.findViewById(R.id.textView1);
         label2 = root.findViewById(R.id.textView2);
@@ -87,24 +79,17 @@ public class CountCoinsFragment extends Fragment {
         return root;
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         OpenCVLoader.initDebug();
 
-        countCoinsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                countCoinsFromImage();
-            }
-        });
+        countCoinsButton.setOnClickListener(view -> countCoinsFromImage());
 
-        captureImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onCaptureImageButtonClick();
-                textView.setText("Number of coins: ");
-            }
+        captureImageButton.setOnClickListener(view -> {
+            onCaptureImageButtonClick();
+            textView.setText("Number of coins: ");
         });
 
         seekbar1.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -176,7 +161,7 @@ public class CountCoinsFragment extends Fragment {
     }
 
     private void loadImage(String url) {
-        Log.d(TAG, "Image cache path: " + url);
+        Log.d("myTag", "Image cache path: " + url);
 
         GlideApp.with(this).load(url).into(selected_image);
 
@@ -267,7 +252,6 @@ public class CountCoinsFragment extends Fragment {
     private void launchGalleryIntent() {
         Intent intent = new Intent(getActivity(), ImagePickerActivity.class);
         intent.putExtra(ImagePickerActivity.INTENT_IMAGE_PICKER_OPTION, ImagePickerActivity.REQUEST_GALLERY_IMAGE);
-
         // setting aspect ratio
         intent.putExtra(ImagePickerActivity.INTENT_LOCK_ASPECT_RATIO, true);
         intent.putExtra(ImagePickerActivity.INTENT_ASPECT_RATIO_X, 1);
@@ -280,13 +264,9 @@ public class CountCoinsFragment extends Fragment {
         if (requestCode == REQUEST_IMAGE && resultCode == Activity.RESULT_OK) {
             Uri uri = data.getParcelableExtra("path");
             try {
-                // can update this bitmap to server
                 imageBitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
-
                 imageBitmap2 = imageBitmap.copy(imageBitmap.getConfig(), true);
-
-                // loading image from local cache
-                loadImage(uri.toString());
+                loadImage(uri.toString()); // loading image from local cache
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -315,35 +295,39 @@ public class CountCoinsFragment extends Fragment {
         // convert to grayscale RGB or ARGB
         int colorChannels = (mat.channels() == 3) ? Imgproc.COLOR_BGR2GRAY
                 : ((mat.channels() == 4) ? Imgproc.COLOR_BGRA2GRAY : 1);
-
         Imgproc.cvtColor(mat, grayMat, colorChannels);
 
         if(gamma_switch.isChecked()){
-            Mat dst_1 = new Mat(grayMat.size(),grayMat.type());
+            double gamma_val = 0.6;
+            Mat lookUpTable = new Mat(1, 256, CvType.CV_8U);
+            byte[] lookUpTableData = new byte[(int) (lookUpTable.total()*lookUpTable.channels())];
+            for (int i = 0; i < lookUpTable.cols(); i++) {
+                int value = (int) Math.round(Math.pow(i / 255.0, gamma_val) * 255.0);
+                lookUpTableData[i] = value > 255 ? (byte) 255 : (byte) (Math.max(value, 0));
+            }
+            lookUpTable.put(0, 0, lookUpTableData);
+            Core.LUT(grayMat, lookUpTable, grayMat);
+        }
+
+        if(contrast_switch.isChecked()) {
+            Mat cmat = new Mat(grayMat.size(),grayMat.type());
             Core.MinMaxLocResult minmaxV = Core.minMaxLoc(grayMat);
             Core.subtract(grayMat, new Scalar(minmaxV.minVal), grayMat);
-            grayMat.convertTo(dst_1, CvType.CV_8U,(255.0/(minmaxV.maxVal - minmaxV.minVal)),0);
-            grayMat = dst_1;
+            grayMat.convertTo(cmat, CvType.CV_8U,1.5,10.0);
+            grayMat = cmat;
         }
 
         // reduce the noise by GaussianBlur
         Imgproc.GaussianBlur(grayMat, grayMat, new Size(13, 13), 5, 5);
 
         // accumulator value
-        double dp = 1.2d;
+        double acc = 1.2;
         // minimum distance between the center coordinates of detected circles in pixels
         double minDist = 100;
-
-
-        //minRadius = 0;
-        //maxRadius = 200;
 
         // param1 = gradient value used to handle edge detection
         // param2 = Accumulator threshold value for the
         // cv2.CV_HOUGH_GRADIENT method.
-
-       // param1 = 70;
-       // param2 = 100;
 
         // create a Mat object to store the circles detected
         Mat circles = new Mat(imageBitmap.getWidth(),
@@ -351,7 +335,7 @@ public class CountCoinsFragment extends Fragment {
 
         // find the circle in the image
         Imgproc.HoughCircles(grayMat, circles,
-                Imgproc.CV_HOUGH_GRADIENT, dp, minDist, param1,
+                Imgproc.CV_HOUGH_GRADIENT, acc, minDist, param1,
                 param2, minRadius, maxRadius);
 
         // get the number of circles detected
@@ -386,29 +370,6 @@ public class CountCoinsFragment extends Fragment {
                     Point center = new Point(x, y);
                     int radius = (int) circleCoordinates[2];
 
-                    int colour = 0;
-                    int red = 0;
-                    int green = 0;
-                    int blue = 0;
-                    int alpha = 0;
-                    int counter = 1;
-                    for(int a = y - radius; a < y + radius; a++) {
-                        for(int b = x - radius; b < x + radius; b++){
-                            if(Math.sqrt(Math.pow((y-a),2) + Math.pow((x-b),2)) < radius){
-                                colour = imageBitmap.getPixel(b, a);
-                                red += Color.red(colour);
-                                green += Color.green(colour);
-                                blue += Color.blue(colour);
-                                alpha += Color.alpha(colour);
-                                counter++;
-                            }
-                        }
-                    }
-
-                    Log.d("myTag", "Srednie RGBA to:  " + red/counter + " " + green/counter + " " + blue/counter + " " + alpha/counter + " i licznik " + counter );
-                    Log.d("myTag", "Radius = " + radius);
-                    int c = imageBitmap.getPixel(x,y);
-
                     Imgproc.circle(mat, center, radius, new Scalar(0,
                             255, 0), 4);
 
@@ -421,10 +382,8 @@ public class CountCoinsFragment extends Fragment {
                         double h = (dim_ratio[j] +  dim_ratio[j+1])/2.0;
                         if( radius < lowest_r * h && radius >= lowest_r * l){
                             Imgproc.putText(mat, coins[j-1], new Point(x - 10, y - 10), font, 3, color , 3);
-                            Log.d("myTag", "Policzona moneta to:  " + coins[j-1] );
                         } else if( j == 8 && radius >= lowest_r * h) {
                             Imgproc.putText(mat, coins[j], new Point(x - 10, y - 10), font, 3, color, 3);
-                            Log.d("myTag", "Policzona moneta to:  " + coins[j] );
                         }
                     }
 

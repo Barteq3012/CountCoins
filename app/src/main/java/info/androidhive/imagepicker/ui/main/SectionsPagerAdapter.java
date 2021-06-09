@@ -1,8 +1,6 @@
 package info.androidhive.imagepicker.ui.main;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
@@ -10,7 +8,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import info.androidhive.imagepicker.CountCoinsFragment;
-import info.androidhive.imagepicker.DetectText;
 import info.androidhive.imagepicker.DetectTextFragment;
 import info.androidhive.imagepicker.R;
 

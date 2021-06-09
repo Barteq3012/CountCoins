@@ -118,6 +118,12 @@ tools:context=".CountCoinsFragment">
             android:layout_height="wrap_content"
             android:text="Gamma correction" />
 
+        <Switch
+            android:id="@+id/contrast_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Contrast increase" />
+
     </GridLayout>
 
 
@@ -142,7 +148,7 @@ tools:context=".CountCoinsFragment">
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@color/profile_default_tint"
+            android:background="@color/button"
             android:text="@string/count_coins"
             android:textAllCaps="false"
             android:textColor="@android:color/white"
@@ -154,7 +160,7 @@ tools:context=".CountCoinsFragment">
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_weight="1"
-            android:background="@color/profile_default_tint"
+            android:background="@color/button"
             android:text="@string/capture_image"
             android:textAllCaps="false"
             android:textColor="@android:color/white"

@@ -10,18 +10,19 @@
     <string name="capture_image">Capture Image</string>
     <string name="count_coins">Count Coins</string>
 
-    <!-- fonts -->
+
+    <string name="dialog_permission_title">Grant Permissions</string>
+    <string name="dialog_permission_message">This app needs permission to use this feature. You can grant them in app settings.</string>
+    <string name="go_to_settings">GOTO SETTINGS</string>
+    <string name="tab_text_1">Detect text</string>
+    <string name="tab_text_2">Count coins</string>
+    <string name="n_coins">Number of coins: </string>
+    <string name="todo">TODO</string>
+
     <string name="font_family_light">sans-serif-light</string>
     <string name="font_family_medium">sans-serif-medium</string>
     <string name="font_family_regular">sans-serif</string>
     <string name="font_family_condensed">sans-serif-condensed</string>
     <string name="font_family_black">sans-serif-black</string>
     <string name="font_family_thin">sans-serif-thin</string>
-    <string name="dialog_permission_title">Grant Permissions</string>
-    <string name="dialog_permission_message">This app needs permission to use this feature. You can grant them in app settings.</string>
-    <string name="go_to_settings">GOTO SETTINGS</string>
-    <string name="title_activity_main2">MainActivity2</string>
-    <string name="tab_text_1">Detect text</string>
-    <string name="tab_text_2">Count coins</string>
-    <string name="n_coins">Number of coins: </string>
 </resources>

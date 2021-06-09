@@ -44,11 +44,12 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@color/design_default_color_primary_dark"
+                android:background="@color/button"
                 android:text="@string/detect_text"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                style="?android:attr/buttonBarButtonStyle" />
 
             <Button
                 android:id="@+id/captureImageButtonId"
@@ -56,11 +57,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_weight="1"
-                android:background="@color/design_default_color_primary_dark"
+                android:background="@color/button"
                 android:text="@string/capture_image"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                android:layout_marginStart="5dp"
+                style="?android:attr/buttonBarButtonStyle" />
         </LinearLayout>
 
         <android.support.constraint.ConstraintLayout
@@ -78,8 +81,7 @@
                 android:src="@drawable/outline_image_black_48"
                 app:layout_constraintDimensionRatio="1:1"
                 tools:ignore="MissingConstraints"
-
-                />
+                android:contentDescription="@string/todo" />
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/copyTextButton"
@@ -94,7 +96,8 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.955"
-                android:focusable="true" />
+                android:focusable="true"
+                android:contentDescription="@string/todo" />
 
         </android.support.constraint.ConstraintLayout>
 

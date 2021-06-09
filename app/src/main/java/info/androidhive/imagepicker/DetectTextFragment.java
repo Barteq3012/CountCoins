@@ -9,13 +9,11 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,31 +23,21 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.ml.vision.FirebaseVision;
 import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import com.google.firebase.ml.vision.text.FirebaseVisionTextDetector;
 import java.io.IOException;
 import java.util.List;
-import info.androidhive.imagepicker.ui.main.PageViewModel;
-
 
 public class DetectTextFragment extends Fragment {
-    private static final String ARG_SECTION_NUMBER = "section_number";
-    private PageViewModel pageViewModel;
-
-    private static final String TAG = DetectText.class.getSimpleName();
     public static final int REQUEST_IMAGE = 100;
-    static final int REQUEST_IMAGE_CAPTURE = 1;
     Button detectTextButton;
     Button captureImageButton;
     Bitmap imageBitmap;
     TextView textView;
     ImageView selected_image;
     FloatingActionButton copyButton;
-
 
     @Override
     public View onCreateView(
@@ -68,28 +56,15 @@ public class DetectTextFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        detectTextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                detectTextFromImage();
-            }
-        });
+        detectTextButton.setOnClickListener(view -> detectTextFromImage());
 
-        captureImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onCaptureImageButtonClick();
-            }
-        });
+        captureImageButton.setOnClickListener(view -> onCaptureImageButtonClick());
 
-        copyButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("whatever", textView.getText().toString());
-                clipboard.setPrimaryClip(clip);
-                Toast.makeText(getActivity(), "Text has been copied", Toast.LENGTH_SHORT).show();
-            }
+        copyButton.setOnClickListener(view -> {
+            ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("whatever", textView.getText().toString());
+            clipboard.setPrimaryClip(clip);
+            Toast.makeText(getActivity(), "Text has been copied", Toast.LENGTH_SHORT).show();
         });
 
         textView.setMovementMethod(new ScrollingMovementMethod());
@@ -101,7 +76,7 @@ public class DetectTextFragment extends Fragment {
     }
 
     private void loadImage(String url) {
-        Log.d(TAG, "Image cache path: " + url);
+        Log.d("myTag", "Image cache path: " + url);
 
         GlideApp.with(this).load(url).into(selected_image);
 
@@ -223,17 +198,10 @@ public class DetectTextFragment extends Fragment {
         }
         FirebaseVisionImage firebaseVisionImage = FirebaseVisionImage.fromBitmap(imageBitmap);
         FirebaseVisionTextDetector firebaseVisionTextDetector = FirebaseVision.getInstance().getVisionTextDetector();
-        firebaseVisionTextDetector.detectInImage(firebaseVisionImage).addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
-            @Override
-            public void onSuccess(FirebaseVisionText firebaseVisionText) {
-                displayTextFromImage(firebaseVisionText);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getActivity(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.d("Error: " , e.getMessage());
-            }
+        firebaseVisionTextDetector.detectInImage(firebaseVisionImage).addOnSuccessListener(
+                this::displayTextFromImage).addOnFailureListener(e -> {
+            Toast.makeText(getActivity(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Log.d("Error: " , e.getMessage());
         });
     }
 
@@ -242,6 +210,7 @@ public class DetectTextFragment extends Fragment {
         copyButton.hide();
         if (blockList.size() == 0){
             Toast.makeText(getActivity(), "No Text Found in image", Toast.LENGTH_SHORT).show();
+            textView.setText("");
         } else {
             copyButton.show();
             String text = "";

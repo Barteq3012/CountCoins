@@ -243,10 +243,7 @@ public class ImagePickerActivity extends AppCompatActivity {
         return name;
     }
 
-    /**
-     * Calling this will delete the images from cache directory
-     * useful to clear some memory
-     */
+    //Calling this will delete the images from cache directory
     public static void clearCache(Context context) {
         File path = new File(context.getExternalCacheDir(), "camera");
         if (path.exists() && path.isDirectory()) {
