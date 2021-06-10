@@ -31,9 +31,7 @@ import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
-
 import java.io.IOException;
-
 
 public class CountCoinsFragment extends Fragment {
     public static final int REQUEST_IMAGE = 100;
@@ -175,47 +173,7 @@ public class CountCoinsFragment extends Fragment {
     }
 
     void onCaptureImageButtonClick() {
-       /* Dexter.withActivity(getActivity())
-                .withPermissions(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                .withListener(new MultiplePermissionsListener() {
-                    @Override
-                    public void onPermissionsChecked(MultiplePermissionsReport report) {
-                        if (report.areAllPermissionsGranted()) {
-                            showImagePickerOptions();
-                            //textView.setText("");
-                        }
-
-                        if (report.isAnyPermissionPermanentlyDenied()) {
-                            showSettingsDialog();
-                        }
-                    }
-
-                    @Override
-                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
-                        token.continuePermissionRequest();
-                    }
-                }).check();*/
         showImagePickerOptions();
-        /*Permiso.getInstance().requestPermissions(new Permiso.IOnPermissionResult() {
-            @Override
-            public void onPermissionResult(Permiso.ResultSet resultSet) {
-                if (resultSet.isPermissionGranted(Manifest.permission.CAMERA)) {
-                    if (resultSet.isPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                        showImagePickerOptions();
-                    } else {
-                        showSettingsDialog();
-                    }
-                }else {
-                    showSettingsDialog();
-                }
-
-            }
-
-            @Override
-            public void onRationaleRequested(Permiso.IOnRationaleProvided callback, String... permissions) {
-                Permiso.getInstance().showRationaleInDialog("Title", "Message", null, callback);
-            }
-        }, Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALENDAR);*/
     }
 
     private void showImagePickerOptions() {
@@ -275,8 +233,10 @@ public class CountCoinsFragment extends Fragment {
 
     private void countCoinsFromImage() {
         double sum = 0.0;
-        double s = 15.5;
-        double[] dim_ratio = {1.0,1.0,16.5/s,17.5/s,18.5/s,19.5/s,20.5/s,21.5/s,24.0/s,24.0/s};
+        //double s = 15.5;
+        double s = 24.0;
+        //double[] dim_ratio = {1.0,1.0,16.5/s,17.5/s,18.5/s,19.5/s,20.5/s,21.5/s,24.0/s,24.0/s};
+        double[] dim_ratio = {1.0,1.0,23.0/s,21.5/s,20.5/s,19.5/s,18.5/s,17.5/s,16.5/s,15.5/s};
         if(imageBitmap == null){
             Toast.makeText(getActivity(), "Select a picture first!", Toast.LENGTH_SHORT).show();
             return;
@@ -344,13 +304,14 @@ public class CountCoinsFragment extends Fragment {
         textView.setText("Number of coins: " + Integer.toString(numberOfCircles));
 
         if( numberOfCircles != 0 && numberOfCircles < 100){
-            int r;
-            int lowest_r = Integer.MAX_VALUE;
+            double r;
+            double highest_r = 0.0;
+
             for (int i=0; i<numberOfCircles; i++) {
                 double[] circleCoordinates = circles.get(0, i);
-                r = (int) circleCoordinates[2];
-                if(r < lowest_r){
-                    lowest_r = r;
+                r = circleCoordinates[2];
+                if(r > highest_r){
+                    highest_r = r;
                 }
             }
 
@@ -358,33 +319,34 @@ public class CountCoinsFragment extends Fragment {
             // draw the circles
             for (int i=0; i<numberOfCircles; i++) {
 
-                /* get the circle details, circleCoordinates[0, 1, 2] = (x,y,r)
-                 * (x,y) are the coordinates of the circle's center
-                 */
+                //circleCoordinates[0, 1, 2] = (x,y,r)
                 double[] circleCoordinates = circles.get(0, i);
-
 
                 if( circleCoordinates.length > 1 ){
                     int x = (int) circleCoordinates[0];
                     int y = (int) circleCoordinates[1];
                     Point center = new Point(x, y);
-                    int radius = (int) circleCoordinates[2];
+                    double radius = circleCoordinates[2];
 
-                    Imgproc.circle(mat, center, radius, new Scalar(0,
+                    Imgproc.circle(mat, center, (int) radius, new Scalar(0,
                             255, 0), 4);
 
                     Scalar color = new Scalar(0, 0, 0);
                     int font = Core.FONT_HERSHEY_SIMPLEX;
 
-                    String[] coins = new String[]{"1", "10", "2", "20", "5", "50", "2", "1", "5"};
+                    String[] coins = new String[]{"5", "1", "2", "50", "5", "20", "2", "10", "1"};
                     for(int j = 1; j < 9; j++){
                         double l = (dim_ratio[j-1] +  dim_ratio[j])/2.0;
                         double h = (dim_ratio[j] +  dim_ratio[j+1])/2.0;
-                        if( radius < lowest_r * h && radius >= lowest_r * l){
+
+                        if( radius > highest_r * h && radius <= highest_r * l){
                             Imgproc.putText(mat, coins[j-1], new Point(x - 10, y - 10), font, 3, color , 3);
-                        } else if( j == 8 && radius >= lowest_r * h) {
+                            Log.d("myTag", "coins radius: " + radius + " kind: " + coins[j-1] );
+                        } else if( j == 8 && radius <= highest_r * h) {
                             Imgproc.putText(mat, coins[j], new Point(x - 10, y - 10), font, 3, color, 3);
+                            Log.d("myTag", "coins radius: " + radius + " kind: " + coins[j] );
                         }
+
                     }
 
                 } else {
@@ -396,31 +358,5 @@ public class CountCoinsFragment extends Fragment {
             Utils.matToBitmap(mat, imageBitmap);
             selected_image.setImageBitmap(imageBitmap);
         }
-
     }
-
-    /*
-    private void showSettingsDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(DetectText.this);
-        builder.setTitle(getString(R.string.dialog_permission_title));
-        builder.setMessage(getString(R.string.dialog_permission_message));
-        builder.setPositiveButton(getString(R.string.go_to_settings), (dialog, which) -> {
-            dialog.cancel();
-            openSettings();
-        });
-        builder.setNegativeButton(getString(android.R.string.cancel), (dialog, which) -> dialog.cancel());
-        builder.show();
-
-    }
-
-    // navigating user to app settings
-    private void openSettings() {
-        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        Uri uri = Uri.fromParts("package", getPackageName(), null);
-        intent.setData(uri);
-        startActivityForResult(intent, 101);
-    }
-
-    */
-
 }

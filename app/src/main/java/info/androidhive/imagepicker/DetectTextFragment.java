@@ -90,47 +90,7 @@ public class DetectTextFragment extends Fragment {
     }
 
     void onCaptureImageButtonClick() {
-       /* Dexter.withActivity(getActivity())
-                .withPermissions(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                .withListener(new MultiplePermissionsListener() {
-                    @Override
-                    public void onPermissionsChecked(MultiplePermissionsReport report) {
-                        if (report.areAllPermissionsGranted()) {
-                            showImagePickerOptions();
-                            //textView.setText("");
-                        }
-
-                        if (report.isAnyPermissionPermanentlyDenied()) {
-                            showSettingsDialog();
-                        }
-                    }
-
-                    @Override
-                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
-                        token.continuePermissionRequest();
-                    }
-                }).check();*/
         showImagePickerOptions();
-        /*Permiso.getInstance().requestPermissions(new Permiso.IOnPermissionResult() {
-            @Override
-            public void onPermissionResult(Permiso.ResultSet resultSet) {
-                if (resultSet.isPermissionGranted(Manifest.permission.CAMERA)) {
-                    if (resultSet.isPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                        showImagePickerOptions();
-                    } else {
-                        showSettingsDialog();
-                    }
-                }else {
-                    showSettingsDialog();
-                }
-
-            }
-
-            @Override
-            public void onRationaleRequested(Permiso.IOnRationaleProvided callback, String... permissions) {
-                Permiso.getInstance().showRationaleInDialog("Title", "Message", null, callback);
-            }
-        }, Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALENDAR);*/
     }
 
     private void showImagePickerOptions() {
@@ -224,28 +184,4 @@ public class DetectTextFragment extends Fragment {
             textView.setText(text);
         }
     }
-
-/*
-    private void showSettingsDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(DetectText.this);
-        builder.setTitle(getString(R.string.dialog_permission_title));
-        builder.setMessage(getString(R.string.dialog_permission_message));
-        builder.setPositiveButton(getString(R.string.go_to_settings), (dialog, which) -> {
-            dialog.cancel();
-            openSettings();
-        });
-        builder.setNegativeButton(getString(android.R.string.cancel), (dialog, which) -> dialog.cancel());
-        builder.show();
-
-    }
-
-    // navigating user to app settings
-    private void openSettings() {
-        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        Uri uri = Uri.fromParts("package", getPackageName(), null);
-        intent.setData(uri);
-        startActivityForResult(intent, 101);
-    }
-
- */
 }

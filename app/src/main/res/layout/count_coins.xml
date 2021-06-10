@@ -25,9 +25,6 @@ tools:context=".CountCoinsFragment">
         android:text="@string/n_coins"
         android:textSize="20sp" />
 
-
-
-
     <GridLayout
         android:id="@+id/sliders_layout"
         android:layout_width="match_parent"
@@ -38,9 +35,7 @@ tools:context=".CountCoinsFragment">
         android:layout_marginStart="10dp"
         android:layout_marginTop="0dp"
         android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
-
-        >
+        android:layout_marginBottom="10dp">
 
         <TextView
             android:id="@+id/textView1"
@@ -126,10 +121,6 @@ tools:context=".CountCoinsFragment">
 
     </GridLayout>
 
-
-
-
-
     <LinearLayout
         android:id="@+id/buttons_layout"
         android:layout_width="match_parent"
@@ -171,9 +162,7 @@ tools:context=".CountCoinsFragment">
         android:id="@+id/rect_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/tool_bar_dimen"
-
-        >
+        android:layout_marginTop="@dimen/tool_bar_dimen">
 
         <ImageView
             android:id="@+id/img_view"
@@ -182,11 +171,9 @@ tools:context=".CountCoinsFragment">
             android:src="@drawable/outline_image_black_48"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintTop_toTopOf="parent"
-
             tools:ignore="MissingConstraints" />
 
     </android.support.constraint.ConstraintLayout>
-
 
 </RelativeLayout>
 

@@ -26,7 +26,6 @@
             android:text=""
             android:textSize="20sp" />
 
-
         <LinearLayout
             android:id="@+id/buttons_layout"
             android:layout_width="match_parent"
@@ -37,7 +36,6 @@
             android:layout_gravity="bottom"
             android:layout_marginBottom="10dp"
             android:orientation="horizontal">
-
 
             <Button
                 android:id="@+id/detectTextButtonId"
@@ -70,9 +68,7 @@
             android:id="@+id/rect_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/tool_bar_dimen"
-
-            >
+            android:layout_marginTop="@dimen/tool_bar_dimen">
 
             <ImageView
                 android:id="@+id/img_view"
